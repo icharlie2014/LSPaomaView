@@ -11,9 +11,16 @@
 #define TEXTCOLOR [UIColor redColor]
 #define TEXTFONTSIZE 14
 
+typedef enum {
+    
+    Horizon = 0,
+    Vertical = 1
+    
+}Direction;
+
 @interface LSPaoMaView : UIView
 
-- (instancetype)initWithFrame:(CGRect)frame title:(NSString*)title;
+- (instancetype)initWithFrame:(CGRect)frame title:(NSString*)title direction:(Direction)direction;
 
 - (void)start;//开始跑马
 - (void)stop;//停止跑马

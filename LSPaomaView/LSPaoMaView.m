@@ -19,6 +19,8 @@
     NSTimeInterval timeInterval;//时间
     
     BOOL isStop;//停止
+    
+    Direction _direction;
 }
 /*
 // Only override drawRect: if you perform custom drawing.
@@ -28,10 +30,12 @@
 }
 */
 
-- (instancetype)initWithFrame:(CGRect)frame title:(NSString*)title
+- (instancetype)initWithFrame:(CGRect)frame title:(NSString*)title direction:(Direction)direction
 {
     self = [super initWithFrame:frame];
     if (self) {
+        
+        _direction = direction;
         //
         title = [NSString stringWithFormat:@"  %@  ",title];//间隔
         
@@ -50,7 +54,15 @@
         CGSize sizeOfText = [textLb sizeThatFits:CGSizeZero];
         
         rectMark1 = CGRectMake(0, 0, sizeOfText.width, self.bounds.size.height);
-        rectMark2 = CGRectMake(rectMark1.origin.x+rectMark1.size.width, 0, sizeOfText.width, self.bounds.size.height);
+        
+        if (direction) {//上下
+            
+            rectMark2 = CGRectMake(0, rectMark1.origin.y+rectMark1.size.height, sizeOfText.width, self.bounds.size.height);
+            
+        }else{//左右
+            rectMark2 = CGRectMake(rectMark1.origin.x+rectMark1.size.width, 0, sizeOfText.width, self.bounds.size.height);
+        }
+        
         
         textLb.frame = rectMark1;
         [self addSubview:textLb];
@@ -72,7 +84,7 @@
             
             [labelArr addObject:reserveTextLb];
             
-            [self paomaAnimate];
+            [self paomaAnimateDirection:_direction];
         }
   
     }
@@ -81,7 +93,7 @@
 
 
 
-- (void)paomaAnimate{
+- (void)paomaAnimateDirection:(Direction)direction{
     
     if (!isStop) {
         //
@@ -89,10 +101,16 @@
         UILabel* lbindex1 = labelArr[1];
         
         [UIView transitionWithView:self duration:timeInterval options:UIViewAnimationOptionCurveLinear animations:^{
-            //
             
-            lbindex0.frame = CGRectMake(-rectMark1.size.width, 0, rectMark1.size.width, rectMark1.size.height);
-            lbindex1.frame = CGRectMake(lbindex0.frame.origin.x+lbindex0.frame.size.width, 0, lbindex1.frame.size.width, lbindex1.frame.size.height);
+            if (direction) {//上下
+                
+                lbindex0.frame = CGRectMake(0, -rectMark1.size.height, rectMark1.size.width, rectMark1.size.height);
+                lbindex1.frame = CGRectMake(0, lbindex0.frame.origin.y+lbindex0.frame.size.height, lbindex1.frame.size.width, lbindex1.frame.size.height);
+                
+            }else{            //左右
+                lbindex0.frame = CGRectMake(-rectMark1.size.width, 0, rectMark1.size.width, rectMark1.size.height);
+                lbindex1.frame = CGRectMake(lbindex0.frame.origin.x+lbindex0.frame.size.width, 0, lbindex1.frame.size.width, lbindex1.frame.size.height);
+            }
             
         } completion:^(BOOL finished) {
             //
@@ -103,7 +121,7 @@
             [labelArr replaceObjectAtIndex:0 withObject:lbindex1];
             [labelArr replaceObjectAtIndex:1 withObject:lbindex0];
             
-            [self paomaAnimate];
+            [self paomaAnimateDirection:direction];
         }];
     }
 }
@@ -119,7 +137,7 @@
     [labelArr replaceObjectAtIndex:0 withObject:lbindex1];
     [labelArr replaceObjectAtIndex:1 withObject:lbindex0];
     
-    [self paomaAnimate];
+    [self paomaAnimateDirection:_direction];
     
 }
 - (void)stop{
